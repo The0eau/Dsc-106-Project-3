@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glucose and Calories Data Visualization</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+
+    <!-- Left-side Menu -->
+    <div id="menu">
+        <h3>Select Graphs</h3>
+        <label><input type="checkbox" id="smoothedGlucose" checked> Smoothed Glucose</label><br>
+        <label><input type="checkbox" id="rawGlucose"> Raw Glucose</label><br>
+        <label><input type="checkbox" id="barCalorie"> Calories</label><br>  <!-- New checkbox for Calories -->
+        <label><input type="checkbox" id="barProtein"> Protein</label><br>  <!-- New checkbox for Calories -->
+    </div>
+
+    <!-- Main Chart Container -->
+    <div id="chart" width="1000" height="1000">
+        <svg width="1000" height="1000"></svg>
+        <div class="tooltip"></div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>

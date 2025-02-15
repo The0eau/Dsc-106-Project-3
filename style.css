@@ -1,0 +1,23 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+#menu {
+    width: 200px;
+    padding: 20px;
+}
+
+#chart {
+    flex: 1;
+    padding: 20px;
+}
+
+.tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 14px;
+    visibility: hidden;
+}
