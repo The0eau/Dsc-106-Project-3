@@ -1,7 +1,13 @@
 body {
     font-family: Arial, sans-serif;
+}
+
+
+
+#visu {
     display: flex;
 }
+
 
 #menu {
     width: 200px;
