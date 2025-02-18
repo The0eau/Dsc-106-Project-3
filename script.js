@@ -163,7 +163,7 @@ Promise.all([
     let smoothedPath = svg.append("path")
         .datum(smoothedData)
         .attr("fill", "none")
-        .attr("stroke", "blue")
+        .attr("stroke", "brown")
         .attr("stroke-width", 2)
         .attr("d", smoothedLine);
 
@@ -171,7 +171,7 @@ Promise.all([
     let rawPath = svg.append("path")
         .datum(glucoseData)
         .attr("fill", "none")
-        .attr("stroke", "red")
+        .attr("stroke", "black")
         .attr("stroke-width", 2)
         .attr("class", "raw-glucose-line")
         .attr("d", line)
@@ -186,7 +186,7 @@ Promise.all([
         .attr("cx", d => xScale(d.Timestamp))
         .attr("cy", d => yScaleGlucose(d.Glucose))
         .attr("r", 4)
-        .attr("fill", "red")
+        .attr("fill", "black")
         .style("display", "none")
         .on("mouseover", (event, d) => {
             tooltip.style("visibility", "visible")
@@ -217,7 +217,7 @@ Promise.all([
         .attr("y", d => yScaleCalories(d.value)) // Y position is based on the sum of calories for each hour
         .attr("width", 20)  // Width of each bar
         .attr("height", d => height - 100 - yScaleCalories(d.value)) // Height based on the sum of calories
-        .attr("fill", "orange")
+        .attr("fill", "red")
         .style("opacity", 0.7)  // Display bars in the chart
         .style("display", "none")
         .on("mouseover", (event, d) => {
@@ -259,7 +259,7 @@ Promise.all([
         .attr("y", d => yScaleCarb(d.value)) // Y position is based on the sum of protein for each hour
         .attr("width", 20)  // Width of each bar
         .attr("height", d => height - 100 - yScaleCarb(d.value)) // Height based on the sum of protein
-        .attr("fill", "green")
+        .attr("fill", "blue")
         .style("opacity", 0.7)  // Display bars in the chart
         .style("display", "none")
         .on("mouseover", (event, d) => {
@@ -281,7 +281,7 @@ Promise.all([
         .attr("y", d => yScaleSugar(d.value)) // Y position is based on the sum of protein for each hour
         .attr("width", 20)  // Width of each bar
         .attr("height", d => height - 100 - yScaleSugar(d.value)) // Height based on the sum of protein
-        .attr("fill", "green")
+        .attr("fill", "yellow")
         .style("opacity", 0.7)  // Display bars in the chart
         .style("display", "none")
         .on("mouseover", (event, d) => {
