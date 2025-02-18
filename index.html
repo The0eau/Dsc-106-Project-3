@@ -3,30 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Glucose and Calories Data Visualization</title>
+    <title>Glucose and Meal Impact</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-    <h1>How do meals affect glucose ?</h1>
+    <header>
+        <h1>How do meals affect glucose?</h1>
+    </header>
 
-    <div id="visu">
-    <!-- Left-side Menu -->
-    <div id="menu">
-        <h3>Select Graphs</h3>
-        <label><input type="checkbox" id="smoothedGlucose" checked> Smoothed Glucose</label><br>
-        <label><input type="checkbox" id="rawGlucose"> Raw Glucose</label><br>
-        <label><input type="checkbox" id="barCalorie"> Calories</label><br>  <!-- New checkbox for Calories -->
-        <label><input type="checkbox" id="barProtein"> Protein</label><br>  <!-- New checkbox for Calories -->
-    </div>
+    <div id="container">
+        <!-- Chart Container -->
+        <div id="chart">
+            <svg></svg>
+            <div class="tooltip"></div>
+        </div>
 
-    <!-- Main Chart Container -->
-    <div id="chart" width="1000" height="1000">
-        <svg width="1000" height="1000"></svg>
-        <div class="tooltip"></div>
+        <!-- Sidebar Menu (Now on the right) -->
+        <div id="menu">
+            <h3>Select Graphs</h3>
+            <label><input type="checkbox" id="smoothedGlucose" checked> Smoothed Glucose</label>
+            <label><input type="checkbox" id="rawGlucose"> Raw Glucose</label>
+            <label><input type="checkbox" id="barCalorie"> Calories</label>
+            <label><input type="checkbox" id="barProtein"> Protein</label>
+            <label><input type="checkbox" id="barCarb"> Carb</label>
+            <label><input type="checkbox" id="barSugar"> Sugar</label>
+        </div>
     </div>
 
     <script src="script.js"></script>
-    </div>
 </body>
 </html>
