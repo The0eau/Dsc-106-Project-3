@@ -97,7 +97,7 @@ Promise.all([
         .domain([startOfDay, endOfDay]) // Time range from midnight to 23:59
         .range([0, width]);
 
-        const yScaleGlucose = d3.scaleLinear()
+    const yScaleGlucose = d3.scaleLinear()
         .domain([d3.min(glucoseData, d => d.Glucose) - 10, d3.max(glucoseData, d => d.Glucose) + 10])
         .range([height - 100, 0]);
 
@@ -120,34 +120,62 @@ Promise.all([
 
     // Define Axes
     const xAxis = d3.axisBottom(xScale).ticks(d3.timeHour.every(1)).tickFormat(d3.timeFormat("%H:%M"));
-    const yAxisLeft = d3.axisLeft(yScaleGlucose); // For glucose (on the left side)
+    const yAxisLeft = svg.append("g").attr("transform", `translate(0,0)`).call(d3.axisLeft(yScaleGlucose)); // For glucose (on the left side)
+    const yAxisRight = svg.append("g").attr("transform", `translate(${width},0)`).call(d3.axisRight(yScaleGlucose)).style("display", "none"); // For glucose (on the right side)
+    const yAxisLeft2 = svg.append("g").attr("transform", `translate(0,0)`).call(d3.axisLeft(yScaleGlucose)).style("display", "none"); // For glucose (on the left side)
+    const yAxisRight2 = svg.append("g").attr("transform", `translate(${width},0)`).call(d3.axisRight(yScaleGlucose)).style("display", "none"); // For glucose (on the right side)
 
     svg.append("g").attr("transform", `translate(0,${height - 100})`).call(xAxis);
-    svg.append("g").attr("transform", `translate(0,0)`).call(yAxisLeft); // Glucose on the left
+
 
     // Create the Y axis for calories and position it on the right, initially hidden
     const yAxisRightCalories = svg.append("g")
+        .attr("transform", `translate(0, 0)`) // Move the Y axis to the right for calories
+        .call(d3.axisLeft(yScaleCalories))
+        .style("display", "none"); // Initially hide the axis
+
+    // Create the Y axis for protein and position it on the right, initially hidden
+    const yAxisRightProtein = svg.append("g")
+        .attr("transform", `translate(0, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
+        .call(d3.axisLeft(yScaleProtein))
+        .style("display", "none"); // Initially hide the axis
+
+    // Create the Y axis for carb and position it on the right, initially hidden
+    const yAxisRightCarb = svg.append("g")
+        .attr("transform", `translate(0, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
+        .call(d3.axisLeft(yScaleCarb))
+        .style("display", "none"); // Initially hide the axis
+
+     // Create the Y axis for carb and position it on the right, initially hidden
+    const yAxisRightSugar = svg.append("g")
+     .attr("transform", `translate(0, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
+     .call(d3.axisLeft(yScaleSugar))
+     .style("display", "none"); // Initially hide the axis
+
+    // Create the Y axis for calories and position it on the right, initially hidden
+    const yAxisRightCaloriesR = svg.append("g")
         .attr("transform", `translate(${width}, 0)`) // Move the Y axis to the right for calories
         .call(d3.axisRight(yScaleCalories))
         .style("display", "none"); // Initially hide the axis
 
     // Create the Y axis for protein and position it on the right, initially hidden
-    const yAxisRightProtein = svg.append("g")
+    const yAxisRightProteinR = svg.append("g")
         .attr("transform", `translate(${width}, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
         .call(d3.axisRight(yScaleProtein))
         .style("display", "none"); // Initially hide the axis
 
     // Create the Y axis for carb and position it on the right, initially hidden
-    const yAxisRightCarb = svg.append("g")
+    const yAxisRightCarbR = svg.append("g")
         .attr("transform", `translate(${width}, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
         .call(d3.axisRight(yScaleCarb))
         .style("display", "none"); // Initially hide the axis
 
      // Create the Y axis for carb and position it on the right, initially hidden
-    const yAxisRightSugar = svg.append("g")
+    const yAxisRightSugarR = svg.append("g")
      .attr("transform", `translate(${width}, 0)`) // Move the Y axis to the right for protein (shift a bit more to the right)
      .call(d3.axisRight(yScaleSugar))
      .style("display", "none"); // Initially hide the axis
+    
 
     // Line Generator for raw glucose data
     const line = d3.line()
@@ -186,7 +214,46 @@ Promise.all([
         .attr("cx", d => xScale(d.Timestamp))
         .attr("cy", d => yScaleGlucose(d.Glucose))
         .attr("r", 4)
-        .attr("fill", "black")
+        .attr("fill", "#ff7f0e")
+        .style("display", "none")
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+                .html(`Time: ${d3.timeFormat("%H:%M")(d.Timestamp)}<br>Glucose: ${Math.round(d.Glucose)} mg/dL`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
+
+
+    // Draw Smoothed Glucose Line (WITHOUT POINTS)
+    let smoothedPathR = svg.append("path")
+        .datum(smoothedData)
+        .attr("fill", "none")
+        .attr("stroke", "brown")
+        .attr("stroke-width", 2)
+        .attr("d", smoothedLine)
+        .style("display", "none");
+
+    // Draw Raw Glucose Line (Initially Hidden)
+    let rawPathR = svg.append("path")
+        .datum(glucoseData)
+        .attr("fill", "none")
+        .attr("stroke", "black")
+        .attr("stroke-width", 2)
+        .attr("class", "raw-glucose-line")
+        .attr("d", line)
+        .style("display", "none");
+
+    // Draw Raw Glucose Points (Initially Hidden)
+    let rawPointsR = svg.selectAll(".raw-pointR")
+        .data(glucoseData)
+        .enter()
+        .append("circle")
+        .attr("class", "raw-pointR")
+        .attr("cx", d => xScale(d.Timestamp))
+        .attr("cy", d => yScaleGlucose(d.Glucose))
+        .attr("r", 4)
+        .attr("fill", "#ff7f0e")
         .style("display", "none")
         .on("mouseover", (event, d) => {
             tooltip.style("visibility", "visible")
@@ -199,12 +266,31 @@ Promise.all([
     // Toggle Smoothed Glucose Line
     d3.select("#smoothedGlucose").on("change", function () {
         smoothedPath.style("display", this.checked ? "block" : "none");
+        yAxisLeft.style("display", this.checked ? "block" : "none");
+        legGlucose.style("display", this.checked ? "block" : "none");
+    });
+
+    // Toggle Smoothed Glucose Line
+    d3.select("#smoothedGlucoseR").on("change", function () {
+        smoothedPathR.style("display", this.checked ? "block" : "none");
+        yAxisRight.style("display", this.checked ? "block" : "none");
+        legGlucoseR.style("display", this.checked ? "block" : "none");
     });
 
     // Toggle Raw Glucose Line & Points
     d3.select("#rawGlucose").on("change", function () {
         rawPath.style("display", this.checked ? "block" : "none");
         rawPoints.style("display", this.checked ? "block" : "none");
+        yAxisLeft2.style("display", this.checked ? "block" : "none");
+        legGlucose2.style("display", this.checked ? "block" : "none");
+    });
+
+     // Toggle Raw Glucose Line & Points
+     d3.select("#rawGlucoseR").on("change", function () {
+        rawPathR.style("display", this.checked ? "block" : "none");
+        rawPointsR.style("display", this.checked ? "block" : "none");
+        yAxisRight2.style("display", this.checked ? "block" : "none");
+        legGlucoseR2.style("display", this.checked ? "block" : "none");
     });
 
     // Draw Bar Chart for Calories (sum of calories for each hour)
@@ -228,12 +314,55 @@ Promise.all([
         })
         .on("mouseout", () => tooltip.style("visibility", "hidden"));
 
+    // Draw Bar Chart for Calories (sum of calories for each hour)
+    let barCalorieR = svg.selectAll(".calories-barR")
+        .data(caloriesByHour)
+        .enter()
+        .append("rect")
+        .attr("class", "calories-barR")
+        .attr("x", d => xScale(d.key))  // Position bars on X axis based on hour
+        .attr("y", d => yScaleCalories(d.value)) // Y position is based on the sum of calories for each hour
+        .attr("width", 20)  // Width of each bar
+        .attr("height", d => height - 100 - yScaleCalories(d.value)) // Height based on the sum of calories
+        .attr("fill", "red")
+        .style("opacity", 0.7)  // Display bars in the chart
+        .style("display", "none")
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+                .html(`Hour: ${d3.timeFormat("%H:%M")(d.key)}<br>Calories: ${d.value} Kcal`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
+
     // Draw Bar Chart for Protein (sum of protein for each hour)
     let barProtein = svg.selectAll(".protein-bar")
         .data(proteinByHour)
         .enter()
         .append("rect")
         .attr("class", "protein-bar")
+        .attr("x", d => xScale(d.key))  // Position bars on X axis based on hour
+        .attr("y", d => yScaleProtein(d.value)) // Y position is based on the sum of protein for each hour
+        .attr("width", 20)  // Width of each bar
+        .attr("height", d => height - 100 - yScaleProtein(d.value)) // Height based on the sum of protein
+        .attr("fill", "green")
+        .style("opacity", 0.7)  // Display bars in the chart
+        .style("display", "none")
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+                .html(`Hour: ${d3.timeFormat("%H:%M")(d.key)}<br>Protein: ${d.value} g`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
+    
+    
+    // Draw Bar Chart for Protein (sum of protein for each hour)
+    let barProteinR = svg.selectAll(".protein-barR")
+        .data(proteinByHour)
+        .enter()
+        .append("rect")
+        .attr("class", "protein-barR")
         .attr("x", d => xScale(d.key))  // Position bars on X axis based on hour
         .attr("y", d => yScaleProtein(d.value)) // Y position is based on the sum of protein for each hour
         .attr("width", 20)  // Width of each bar
@@ -270,6 +399,27 @@ Promise.all([
         })
         .on("mouseout", () => tooltip.style("visibility", "hidden"));
 
+    // Draw Bar Chart for Carb (sum of carb for each hour)
+    let barCarbR = svg.selectAll(".carb-barR")
+        .data(carbByHour)
+        .enter()
+        .append("rect")
+        .attr("class", "carb-barR")
+        .attr("x", d => xScale(d.key))  // Position bars on X axis based on hour
+        .attr("y", d => yScaleCarb(d.value)) // Y position is based on the sum of protein for each hour
+        .attr("width", 20)  // Width of each bar
+        .attr("height", d => height - 100 - yScaleCarb(d.value)) // Height based on the sum of protein
+        .attr("fill", "blue")
+        .style("opacity", 0.7)  // Display bars in the chart
+        .style("display", "none")
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+                .html(`Hour: ${d3.timeFormat("%H:%M")(d.key)}<br>Carb: ${d.value} g`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
+
 
     // Draw Bar Chart for Sugar (sum of sugar for each hour)
     let barSugar = svg.selectAll(".sugar-bar")
@@ -291,6 +441,27 @@ Promise.all([
                 .style("top", (event.pageY - 20) + "px");
         })
         .on("mouseout", () => tooltip.style("visibility", "hidden"));
+    
+    // Draw Bar Chart for Sugar (sum of sugar for each hour)
+    let barSugarR = svg.selectAll(".sugar-barR")
+        .data(sugarByHour)
+        .enter()
+        .append("rect")
+        .attr("class", "sugar-barR")
+        .attr("x", d => xScale(d.key))  // Position bars on X axis based on hour
+        .attr("y", d => yScaleSugar(d.value)) // Y position is based on the sum of protein for each hour
+        .attr("width", 20)  // Width of each bar
+        .attr("height", d => height - 100 - yScaleSugar(d.value)) // Height based on the sum of protein
+        .attr("fill", "yellow")
+        .style("opacity", 0.7)  // Display bars in the chart
+        .style("display", "none")
+        .on("mouseover", (event, d) => {
+            tooltip.style("visibility", "visible")
+                .html(`Hour: ${d3.timeFormat("%H:%M")(d.key)}<br>Sugar: ${d.value} g`)
+                .style("left", (event.pageX + 10) + "px")
+                .style("top", (event.pageY - 20) + "px");
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
 
     // Add Legends for Axes
     svg.append("text")
@@ -298,30 +469,73 @@ Promise.all([
     .style("text-anchor", "middle")
     .text("Time of Day");
 
-    svg.append("text")
+    let legGlucose = svg.append("text")
         .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
         .style("text-anchor", "middle")
         .text("Glucose (mg/dL)");
 
-    let legCalorie = svg.append("text")
+    let legGlucoseR = svg.append("text")
         .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Glucose (mg/dL)")
+        .style("display", "none");
+
+
+    let legGlucose2 = svg.append("text")
+        .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Glucose (mg/dL)")
+        .style("display", "none");
+
+    let legGlucoseR2 = svg.append("text")
+        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Glucose (mg/dL)")
+        .style("display", "none");
+
+    let legCalorie = svg.append("text")
+        .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
         .style("text-anchor", "middle")
         .text("Calories (Kcal)")
         .style("display", "none");
 
     let legProtein = svg.append("text")
-        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
         .style("text-anchor", "middle")
         .text("Protein (g)")
         .style("display", "none");
 
     let legCarb = svg.append("text")
-        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
         .style("text-anchor", "middle")
         .text("Carb (g)")
         .style("display", "none");
 
     let legSugar = svg.append("text")
+        .attr("transform", `translate(-40, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Sugar (g)")
+        .style("display", "none");
+
+    let legCalorieR = svg.append("text")
+        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Calories (Kcal)")
+        .style("display", "none");
+
+    let legProteinR = svg.append("text")
+        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Protein (g)")
+        .style("display", "none");
+
+    let legCarbR = svg.append("text")
+        .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
+        .style("text-anchor", "middle")
+        .text("Carb (g)")
+        .style("display", "none");
+
+    let legSugarR = svg.append("text")
         .attr("transform", `translate(${width + 40}, ${height / 2}) rotate(-90)`)
         .style("text-anchor", "middle")
         .text("Sugar (g)")
@@ -334,11 +548,24 @@ Promise.all([
         legCalorie.style("display", this.checked ? "block" : "none");
     });
 
+    d3.select("#barCalorieR").on("change", function () {
+        barCalorieR.style("display", this.checked ? "block" : "none");
+        yAxisRightCaloriesR.style("display", this.checked ? "block" : "none");
+        legCalorieR.style("display", this.checked ? "block" : "none");
+    });
+
     // Toggle Bar Chart for Protein
     d3.select("#barProtein").on("change", function () {
         barProtein.style("display", this.checked ? "block" : "none");
         yAxisRightProtein.style("display", this.checked ? "block" : "none");
         legProtein.style("display", this.checked ? "block" : "none");
+    });
+
+    // Toggle Bar Chart for Protein
+    d3.select("#barProteinR").on("change", function () {
+        barProteinR.style("display", this.checked ? "block" : "none");
+        yAxisRightProteinR.style("display", this.checked ? "block" : "none");
+        legProteinR.style("display", this.checked ? "block" : "none");
     });
 
     // Toggle Bar Chart for Carb
@@ -348,11 +575,79 @@ Promise.all([
         legCarb.style("display", this.checked ? "block" : "none");
     });
 
+    // Toggle Bar Chart for Carb
+    d3.select("#barCarbR").on("change", function () {
+        barCarbR.style("display", this.checked ? "block" : "none");
+        yAxisRightCarbR.style("display", this.checked ? "block" : "none");
+        legCarbR.style("display", this.checked ? "block" : "none");
+    });
+
     // Toggle Bar Chart for Sugar
     d3.select("#barSugar").on("change", function () {
         barSugar.style("display", this.checked ? "block" : "none");
         yAxisRightSugar.style("display", this.checked ? "block" : "none");
         legSugar.style("display", this.checked ? "block" : "none");
     });
+
+    // Toggle Bar Chart for Sugar
+    d3.select("#barSugarR").on("change", function () {
+        barSugarR.style("display", this.checked ? "block" : "none");
+        yAxisRightSugarR.style("display", this.checked ? "block" : "none");
+        legSugarR.style("display", this.checked ? "block" : "none");
+    });
+
+    const colorMapping = {
+        smoothedGlucose: "#1f77b4",  // Bleu foncé
+        rawPath : "#ff7f0e",       // Orange vif
+        calories: "#2ca02c",         // Vert
+        protein: "#d62728",          // Rouge
+        carb: "#9467bd",             // Violet
+        sugar: "#e377c2"             // Rose clair
+    };
+    
+    // Appliquer les couleurs mises à jour aux éléments graphiques
+    smoothedPath.attr("stroke", colorMapping.smoothedGlucose);
+    rawPath.attr("stroke", colorMapping.rawPath);
+    barCalorie.attr("fill", colorMapping.calories);
+    barProtein.attr("fill", colorMapping.protein);
+    barCarb.attr("fill", colorMapping.carb);
+    barSugar.attr("fill", colorMapping.sugar);
+    smoothedPathR.attr("stroke", colorMapping.smoothedGlucose);
+    rawPathR.attr("stroke", colorMapping.rawPath);
+    barCalorieR.attr("fill", colorMapping.calories);
+    barProteinR.attr("fill", colorMapping.protein);
+    barCarbR.attr("fill", colorMapping.carb);
+    barSugarR.attr("fill", colorMapping.sugar);
+    
+
+    const legend = svg.append("g")
+    .attr("transform", `translate(${width - 200}, ${height - 50})`);
+
+    const legendItems = [
+        { name: "Smoothed Glucose", color: colorMapping.smoothedGlucose },
+        { name: "Raw Glucose", color: colorMapping.rawPath },
+        { name: "Calories", color: colorMapping.calories },
+        { name: "Protein", color: colorMapping.protein },
+        { name: "Carb", color: colorMapping.carb },
+        { name: "Sugar", color: colorMapping.sugar }
+    ];
+
+    legendItems.forEach((item, index) => {
+        legend.append("rect")
+            .attr("x", 10)
+            .attr("y", index * 20)
+            .attr("width", 15)
+            .attr("height", 15)
+            .attr("fill", item.color);
+
+    legend.append("text")
+        .attr("x", 30)
+        .attr("y", index * 20 + 12)
+        .attr("fill", "#333")
+        .attr("font-size", "14px")
+        .text(item.name);
+        });
+
+
 
 });
