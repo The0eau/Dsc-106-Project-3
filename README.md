@@ -27,45 +27,45 @@ The management of blood glucose levels is critical for understanding metabolic h
 	To work together as a team, we first developed some graphs individually to explore the data and develop our ideas, then we met in person to brainstorm and talk about ideas for our final visualization, and then we later met up again to work on our final together. We learned that maintaining visual clarity while displaying multiple data streams required thoughtful color and layout decisions. For the split, Theau did the dataset selection, interactive chart implementation, and filtering and dynamic updates. Justin did the dataset selection and annotations and meal markers and styling and UI enhancements. Selina did debugging and optimization, and the write-up and documentation. 
 
 ---
-* Task | Team Member | Time
+Task | Team Member | Time
 
 
-Dataset Selection & Cleaning
+* Dataset Selection & Cleaning
 Theau 1h
 
 
 
 
-Interactive Chart Implementation (D3.js)
+* Interactive Chart Implementation (D3.js)
 Theau 3 h
 
 
 
 
-Filtering & Dynamic Updates
+* Filtering & Dynamic Updates
 Theau 2 h
 
 
 
 
-Annotations & Meal Markers
+* Annotations & Meal Markers
 Justin     1.5h
 
 
 
 
-Styling & UI Enhancements (CSS)
+* Styling & UI Enhancements (CSS)
 Justin        2h
 
 
 
 
-Debugging & Optimization
+* Debugging & Optimization
 Selina
 2h
 
 
-Write-Up & Documentation
+* Write-Up & Documentation
 Selina
 1.5h
 
