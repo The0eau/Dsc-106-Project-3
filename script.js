@@ -648,6 +648,46 @@ Promise.all([
         .text(item.name);
         });
 
+    // Define meal times (adjust as needed)
+    const mealTimes = [
+        { time: new Date("2020-02-14T08:00:00"), label: "Breakfast" },
+        { time: new Date("2020-02-14T13:00:00"), label: "Lunch" },
+        { time: new Date("2020-02-14T19:00:00"), label: "Dinner" }
+    ];
 
+    // Append meal annotations (vertical lines)
+    const mealAnnotations = svg.selectAll(".meal-line")
+        .data(mealTimes)
+        .enter()
+        .append("line")
+        .attr("class", "meal-line")
+        .attr("x1", d => xScale(d.time))
+        .attr("x2", d => xScale(d.time))
+        .attr("y1", 0)
+        .attr("y2", height - margin.bottom)
+        .attr("stroke", "red")
+        .attr("stroke-width", 2)
+        .attr("stroke-dasharray", "5,5")
+        .style("display", "none");;
+
+    // Append meal labels
+    const mealLabels = svg.selectAll(".meal-label")
+        .data(mealTimes)
+        .enter()
+        .append("text")
+        .attr("class", "meal-label")
+        .attr("x", d => xScale(d.time) + 5)  // Offset text slightly to the right
+        .attr("y", 20)
+        .attr("fill", "red")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bold")
+        .text(d => d.label)
+        .style("display", "none");;
+    
+    // Toggle Bar Chart for Sugar
+    d3.select("#annotations").on("change", function () {
+        mealAnnotations.style("display", this.checked ? "block" : "none");
+        mealLabels.style("display", this.checked ? "block" : "none");
+    });
 
 });
