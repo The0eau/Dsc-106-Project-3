@@ -1,6 +1,6 @@
 ---
 
-# How do meals affect blood glucose level?
+# Dynamic Visualization: How do meals affect blood glucose level?
 
 ---
 
